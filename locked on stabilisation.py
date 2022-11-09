@@ -39,14 +39,14 @@ while True:
                          criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
                                                          15, 0.08))
 
-	cv2.circle(mask, (int(new_pts.ravel()[0]), int(new_pts.ravel()[1])), 2, (0,255,0), 2)
-	combined = cv2.addWeighted(frame2, 0.7, mask, 0.3, 0.1)
+    cv2.circle(mask, (int(new_pts.ravel()[0]), int(new_pts.ravel()[1])), 2, (0,255,0), 2)
+    combined = cv2.addWeighted(frame2, 0.7, mask, 0.3, 0.1)
 
-	cv2.imshow("new win", mask)
-	cv2.imshow("wind", combined)
+    cv2.imshow("new win", mask)
+    cv2.imshow("wind", combined)
 
-	old_gray = new_gray.copy()
-	old_pts = new_pts.copy()
+    old_gray = new_gray.copy()
+    old_pts = new_pts.copy()
     
     x1 = int(new_pts.ravel()[0]) - 100
     x2 = int(new_pts.ravel()[0]) + 100

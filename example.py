@@ -34,42 +34,42 @@ def fixBorder(frame):
 
 # Read input video
 
-cp = cv2.VideoCapture("Simple1.mp4")
+cap = cv2.VideoCapture("dotsquiggle2.mp4")
 
 # To get number of frames
-n_frames = int(cp.get(cv2.CAP_PROP_FRAME_COUNT))
+n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
 # To check the number of frames in the video
-print(n_frames)
+print("The number of frames in this video: ",n_frames)
 
-width = int(cp.get(cv2.CAP_PROP_FRAME_WIDTH)) 
-height = int(cp.get(cv2.CAP_PROP_FRAME_HEIGHT))
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) 
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-print("height", width)
-print("height", height)
+print("height is: ", width)
+print("height width is: ", height)
 
 # get the number of frames per second
-fps = cp.get(cv2.CAP_PROP_FPS)
+fps = cap.get(cv2.CAP_PROP_FPS)
 
 
 # Try doing 2*width
 out = cv2.VideoWriter('video_out.avi',cv2.VideoWriter_fourcc(*'XVID'), fps, (width, height))
 
 # read the first frame  
-_, prev = cp.read()
+_, prev = cap.read()
 
 prev_gray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
 transforms = np.zeros((n_frames-1, 3), np.float32) 
 
 for i in range(n_frames-2):
-	prev_pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200, qualityLevel=0.01, minDistance=0.01, blockSize=3)
+	prev_pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=50, qualityLevel=0.01, minDistance=0.01, blockSize=3)
 
-	succ, curr = cp.read()
+	ret, frame = cap.read()
 
-	if not succ:
+	if not ret:
 		break
 
-	curr_gray = cv2.cvtColor(curr, cv2.COLOR_BGR2GRAY)
+	curr_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
 
 	# Track feature points
@@ -100,7 +100,7 @@ for i in range(n_frames-2):
 	prev_gray = curr_gray
 	
 
-	#print("Frame: " + str(i) +  "/" + str(n_frames) + " -  Tracked points : " + str(len(prev_pts)))
+	print("Frame: " + str(i) +  "/" + str(n_frames) + " -  Tracked points : " + str(len(prev_pts)))
 
 # Find the cumulative sum of tranform matrix for each dx,dy and da
 trajectory = np.cumsum(transforms, axis=0) 
@@ -110,12 +110,12 @@ difference = smoothed_trajectory - trajectory
 transforms_smooth = transforms + difference
 
 # Reset stream to first frame 
-cp.set(cv2.CAP_PROP_POS_FRAMES, 0) 
+cap.set(cv2.CAP_PROP_POS_FRAMES, 0) 
 # Write n_frames-1 transformed frames
 for i in range(n_frames-2):
 	# Read next frame
-	success, frame = cp.read() 
-	if not success:
+	ret, frame = cap.read() 
+	if not ret:
 		break
 
 	# Extract transformations from the new transformation array
@@ -150,7 +150,7 @@ for i in range(n_frames-2):
 
 out.write(frame_out)
 # Release video
-cp.release()
+cap.release()
 out.release()
 # Close windows
 cv2.destroyAllWindows()
